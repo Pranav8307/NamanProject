@@ -31,9 +31,9 @@ services:
     env: node
     plan: free
     branch: main
-    # Build command: install root deps (for express), build client
-    buildCommand: npm install && cd client && npm install --include=dev && npm run build
-    # Start with client-server.js (Express server that serves static files with SPA routing)
+    # Build command: build client (no external deps needed)
+    buildCommand: cd client && npm install --include=dev && npm run build
+    # Start with client-server.js (pure Node.js server with SPA routing)
     startCommand: node client-server.js
     envVars:
       - key: NODE_ENV

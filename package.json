@@ -29,8 +29,6 @@
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+  "dependencies": {}
 }
 
