@@ -14,6 +14,11 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  // Build output config
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
   }
 })
 
