@@ -1,0 +1,39 @@
+# Render configuration (example)
+# This file provides an example configuration for deploying the project
+# as two separate services on Render: a Node web service for the server
+# and a static site for the client. Replace values and add secrets
+# in the Render dashboard or in this file before pushing.
+
+services:
+  - type: web_service
+    name: oauth-social-login-server
+    env: node
+    plan: free
+    # buildCommand runs when Render prepares the service
+    buildCommand: cd server && npm install
+    # startCommand is used to run the server process
+    startCommand: cd server && npm start
+    # Leave sensitive values blank here and set them in the Render dashboard
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: ""
+      - key: JWT_SECRET
+        value: ""
+      - key: JWT_REFRESH_SECRET
+        value: ""
+      - key: CLIENT_URL
+        value: "" # set to your deployed client URL (e.g. https://my-client.onrender.com)
+
+static_sites:
+  - name: oauth-social-login-client
+    branch: main
+    # Build command for the client (Vite)
+    buildCommand: cd client && npm install && npm run build
+    publishPath: client/dist
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_BASE
+        value: "" # optional: set to your API base URL (e.g. https://my-server.onrender.com)
