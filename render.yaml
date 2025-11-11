@@ -41,3 +41,8 @@ static_sites:
         value: "false"
       - key: VITE_API_BASE
         value: "" # optional: set to your API base URL (e.g. https://my-server.onrender.com)
+    # Routes for SPA (React Router) - serve index.html for all unknown routes
+    routes:
+      - path: /*
+        destination: /index.html
+        status: 200
