@@ -49,3 +49,24 @@ Post-deploy verification
 3. Check the server's `/health` endpoint (https://<your-server>.onrender.com/health) for status.
 
 If anything fails, check the service logs in the Render dashboard — they usually indicate missing env vars or build errors.
+
+Troubleshooting common Render build errors
+
+**"vite: not found" during client build**
+- Cause: Vite is in `devDependencies` of `client/package.json`, but npm skips devDependencies when building.
+- Fix: Use `--include=dev` flag in the build command:
+  ```
+  cd client && npm install --include=dev && npm run build
+  ```
+  I have already added this to `render.yaml` so future builds will work. If you want to change it in the Render dashboard (without editing the file), go to your Static Site service settings and update the Build Command to the above.
+- Alternative: Set env var `NPM_CONFIG_PRODUCTION=false` in the Render environment variables so npm includes devDependencies automatically.
+
+**Build works locally but fails on Render**
+- Check Node version: Render uses Node 25.x by default. Your `package.json` specifies `"engines": { "node": ">=16.x" }` which is fine. If you need a specific version, set it in `render.yaml` or Render environment.
+- Check env vars: Ensure all required vars (MONGODB_URI, JWT_SECRET, etc.) are set in the Render dashboard Environment tab.
+- Check logs: Open Render service Build Logs and Runtime Logs tabs for detailed error output.
+
+**"CORS error" or "cannot connect to server from client"**
+- Ensure `CLIENT_URL` env var on the server equals your deployed client URL (exactly, with https/http scheme).
+- Example: If client is at `https://oauth-social-login-client.onrender.com`, server's `CLIENT_URL` must be exactly that.
+- Restart the server after changing env vars (Render auto-restarts on env var changes, but you can force via "Manual Deploy").

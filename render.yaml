@@ -30,10 +30,14 @@ static_sites:
   - name: oauth-social-login-client
     branch: main
     # Build command for the client (Vite)
-    buildCommand: cd client && npm install && npm run build
+    # IMPORTANT: Use --include=dev to ensure Vite (in devDependencies) is installed during build.
+    # Without this, npm skips devDependencies and 'vite: not found' error occurs.
+    buildCommand: cd client && npm install --include=dev && npm run build
     publishPath: client/dist
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
       - key: VITE_API_BASE
         value: "" # optional: set to your API base URL (e.g. https://my-server.onrender.com)
