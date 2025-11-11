@@ -26,14 +26,15 @@ services:
       - key: CLIENT_URL
         value: "" # set to your deployed client URL (e.g. https://my-client.onrender.com)
 
-static_sites:
-  - name: oauth-social-login-client
+  - type: web_service
+    name: oauth-social-login-client
+    env: node
+    plan: free
     branch: main
-    # Build command: build client and copy _redirects for SPA routing
-    buildCommand: cd client && npm install --include=dev && npm run build && cp public/_redirects dist/_redirects
-    publishPath: client/dist
+    # Build command: install root deps (for express), build client
+    buildCommand: npm install && cd client && npm install --include=dev && npm run build
+    # Start with client-server.js (Express server that serves static files with SPA routing)
+    startCommand: node client-server.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NPM_CONFIG_PRODUCTION
-        value: "false"
