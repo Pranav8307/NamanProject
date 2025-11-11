@@ -10,6 +10,19 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const DIST_DIR = path.join(__dirname, 'client', 'dist');
 
+console.log(`Starting client server on port ${PORT}`);
+console.log(`Serving files from: ${DIST_DIR}`);
+
+// Check if dist directory exists
+if (!fs.existsSync(DIST_DIR)) {
+  console.error(`ERROR: Directory not found: ${DIST_DIR}`);
+  console.error(`Current working directory: ${__dirname}`);
+  console.error(`Contents of ${__dirname}:`, fs.readdirSync(__dirname));
+  process.exit(1);
+}
+
+console.log(`✓ Dist directory found. Contents:`, fs.readdirSync(DIST_DIR));
+
 // MIME types
 const mimeTypes = {
   '.html': 'text/html',
@@ -29,12 +42,12 @@ const mimeTypes = {
 
 const server = http.createServer((req, res) => {
   // Decode URL and prevent directory traversal attacks
-  let filePath = path.join(DIST_DIR, decodeURIComponent(req.url));
-
-  // Resolve to index.html if it's a directory or file not found (SPA routing)
-  if (!filePath.includes('.')) {
-    filePath = path.join(DIST_DIR, 'index.html');
+  let urlPath = decodeURIComponent(req.url);
+  if (urlPath.startsWith('/')) {
+    urlPath = urlPath.substring(1);
   }
+  
+  let filePath = path.join(DIST_DIR, urlPath);
 
   // Ensure the file is within DIST_DIR (security)
   const realPath = path.resolve(filePath);
@@ -47,9 +60,11 @@ const server = http.createServer((req, res) => {
   // Check if file exists
   fs.stat(realPath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // File not found, serve index.html for SPA routing
-      fs.readFile(path.join(DIST_DIR, 'index.html'), (err, data) => {
+      // File not found or is directory, serve index.html for SPA routing
+      const indexPath = path.join(DIST_DIR, 'index.html');
+      fs.readFile(indexPath, (err, data) => {
         if (err) {
+          console.error(`Error reading index.html: ${err.message}`);
           res.writeHead(404);
           res.end('Not Found');
           return;
@@ -67,6 +82,7 @@ const server = http.createServer((req, res) => {
     // Read and serve the file
     fs.readFile(realPath, (err, data) => {
       if (err) {
+        console.error(`Error reading file: ${err.message}`);
         res.writeHead(500);
         res.end('Internal Server Error');
         return;
@@ -77,7 +93,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Client server running on port ${PORT}`);
-  console.log(`Serving files from ${DIST_DIR}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`✓ Client server running on http://0.0.0.0:${PORT}`);
 });
