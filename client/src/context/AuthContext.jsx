@@ -65,9 +65,13 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await axios.post('/auth/logout')
-      setUser(null)
     } catch (err) {
       console.error('Logout error:', err)
+      // Clear local state even if logout request fails (tokens may be invalid)
+    } finally {
+      // Always clear local state
+      setUser(null)
+      setError(null)
     }
   }
 
