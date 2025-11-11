@@ -1,8 +1,10 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -10,8 +12,6 @@ const mockOAuthRoutes = require('./routes/mockOAuth');
 const avatarProxyRoutes = require('./routes/avatarProxy');
 const { correlationMiddleware } = require('./utils/logger');
 const { config } = require('./config/environment');
-
-dotenv.config();
 
 const app = express();
 
